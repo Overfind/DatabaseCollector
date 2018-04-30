@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventTagger {
-		private static final String keyTextRazor = "0ebcfe4089f597292d681052e28abeab3a19c1761f7b96a4b17b0f62";
+		private static final String keyTextRazor = "apikey";
 		private static DatabaseHandler dbHandler = DatabaseHandler.getInstance();
 		private static boolean control;
 		
