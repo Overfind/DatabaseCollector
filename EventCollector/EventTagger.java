@@ -62,7 +62,7 @@ public class EventTagger {
 			String result = "";
 			if(text == null) 
 				return result;
-            result = text.replace("\"", "\\\"").replace("\\", "\\\\").replace("'", "\\'");
+            		result = text.replace("\"", "\\\"").replace("\\", "\\\\").replace("'", "\\'");
 			return result;
 		}
 		
@@ -70,7 +70,7 @@ public class EventTagger {
 			String result = "";
 			if(text == null) 
 				return result;
-            result = text.replace("\\\"", "\"").replace("\\\\", "\\").replace("\\'", "'");
+            		result = text.replace("\\\"", "\"").replace("\\\\", "\\").replace("\\'", "'");
 			return result;
 		}
 		
