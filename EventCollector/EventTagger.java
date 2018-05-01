@@ -10,21 +10,30 @@ import com.textrazor.AnalysisException;
 import com.textrazor.NetworkException;
 import java.util.ArrayList;
 import java.util.List;
+import com.detectlanguage.DetectLanguage;
+import com.detectlanguage.errors.APIError;
 
 public class EventTagger {
 		private static final String keyTextRazor = "apikey";
+		private static final String keyDetectLanguage = "apikey";
 		private static DatabaseHandler dbHandler = DatabaseHandler.getInstance();
 		private static boolean control;
-		
+
 		private EventTagger() {
-				//TODO
+			//TODO
 		}
 		
-		public static boolean tagEvents(ArrayList<Event> eventList){
+		public static boolean eventTagger(ArrayList<Event> eventList){
 			ArrayList<String> tagNameList = new ArrayList<String>();
+			String lang = "";
+			String text = "";
+			
 			for(Event event : eventList) {
-				String text = "";
 				text = event.name + "\n" + event.description;
+				// check language
+				lang = detectLanguage(text);
+				if(lang == null || lang.compareTo("en") != 0)
+					continue;
 				tagNameList = TextRazorTopic(text);
 				if(tagNameList != null) {
 					addTags(event, tagNameList);
@@ -32,6 +41,37 @@ public class EventTagger {
 				}
 			}
 			return true;
+		}
+
+		public static String detectLanguage(String text) {
+			String lang = "";
+			DetectLanguage.apiKey = keyDetectLanguage;
+			try {
+				lang = DetectLanguage.simpleDetect(text);
+				if (lang == "")
+					return null;
+			}
+			catch (APIError e) {
+				System.err.println( "Detect Language : API Error:\n" + e);
+				return null;
+			}
+			return lang;
+		}
+		
+		public static String addEscape(String text) {
+			String result = "";
+			if(text == null) 
+				return result;
+            result = text.replace("\"", "\\\"").replace("\\", "\\\\").replace("'", "\\'");
+			return result;
+		}
+		
+		public static String removeEscape(String text) {
+			String result = "";
+			if(text == null) 
+				return result;
+            result = text.replace("\\\"", "\"").replace("\\\\", "\\").replace("\\'", "'");
+			return result;
 		}
 		
 		private static ArrayList<String> TextRazorTopic(String text) {
@@ -54,7 +94,7 @@ public class EventTagger {
 				    label = topic.getLabel();
 				    score = topic.getScore();
 				    if(score > 0.8) {
-				    	tags.add(label);
+				    	tags.add(addEscape(label));
 				    }
 				}
 			}
@@ -80,7 +120,6 @@ public class EventTagger {
 			connectTags(tagList);
 			tagList.clear();
 		}
-		
 		
 		private static void connectTags(ArrayList<Tag> tags) {
 			Tag tag1;
