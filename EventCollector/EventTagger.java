@@ -18,9 +18,14 @@ public class EventTagger {
 		private static final String keyDetectLanguage = "apikey";
 		private static DatabaseHandler dbHandler = DatabaseHandler.getInstance();
 		private static boolean control;
+		private static String language;
 
-		private EventTagger() {
-			//TODO
+		public EventTagger() {
+			language = "en";
+		}
+		
+		public EventTagger(String lang) {
+			language = lang;
 		}
 		
 		public static boolean eventTagger(ArrayList<Event> eventList){
@@ -32,7 +37,7 @@ public class EventTagger {
 				text = event.name + "\n" + event.description;
 				// check language
 				lang = detectLanguage(text);
-				if(lang == null || lang.compareTo("en") != 0)
+				if(lang == null || lang.compareTo(language) != 0)
 					continue;
 				tagNameList = TextRazorTopic(text);
 				if(tagNameList != null) {
